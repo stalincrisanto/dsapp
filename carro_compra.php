@@ -25,7 +25,7 @@
 <body>
     <nav class="navbar navbar-expand-md bg-dark navbar-dark">
     <!-- Brand -->
-        <a class="navbar-brand" href="./index.php"><i class="fa fa-shopping-bag"></i>&nbsp; Nombre Tienda</a>
+        <a class="navbar-brand" href="./compras.php"><i class="fa fa-shopping-bag"></i>&nbsp; Nombre Tienda</a>
         <!-- Toggler/collapsibe Button -->
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
             <span class="navbar-toggler-icon"></span>
@@ -35,7 +35,7 @@
         <div class="collapse navbar-collapse" id="collapsibleNavbar">
             <ul class="navbar-nav ml-auto">
                 <li class="nav-item">
-                    <a class="nav-link" href="./index.php">Productos</a>
+                    <a class="nav-link" href="./compras.php">Productos</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="#">Categorías</a>
@@ -92,9 +92,11 @@
                             ?>
                             <tr>
                                 <td><?= $row["id_producto"]; ?></td>
+                                <input type="hidden" class="idProducto" value="<?= $row["id_producto"]; ?>">
                                 <td><img src="<?= $row["imagen_producto"]; ?>" width="50"></td>
                                 <td><?= $row["nombre_producto"] ?></td>
                                 <td><i class="fa fa-usd">&nbsp;</i><?= number_format($row["precio_producto"],2); ?></td>
+                                <input type="hidden" class="precioProducto" value="<?= $row["precio_producto"] ?>">
                                 <td><input type="number" class="form-control operacionCantidad" value="<?= $row["cantidad"]; ?>" style="width:75px;"></td>
                                 <td><i class="fa fa-usd"></i><?= number_format($row["precio_total"],2); ?></td>
                                 <td>
@@ -108,12 +110,12 @@
                             <?php } ?>
                             <tr>
                                 <td colspan="3">
-                                    <a href="./index.php" class="btn btn-success"><i class="fa fa-cart-plus"></i> Continuar Comprando</a>
+                                    <a href="./compras.php" class="btn btn-success"><i class="fa fa-cart-plus"></i> Continuar Comprando</a>
                                 </td>
                                 <td colspan="2"><strong>Total de Compra</strong></td>
                                 <td><i class="fa fa-usd"></i>&nbsp;<strong><?= number_format($total,2); ?></strong></td>
                                 <td>
-                                    <a href="revision_compra" class="btn btn-info <?= ($total>1)?"":"disabled";?>"><i class="fa fa-credit-card"></i> Finalizar Compra</a>
+                                    <a href="revision_compra.php" class="btn btn-info <?= ($total>1)?"":"disabled";?>"><i class="fa fa-credit-card"></i> Finalizar Compra</a>
                                 </td>
                             </tr>
                         </tbody>
@@ -126,7 +128,7 @@
 
 <script type="text/javascript">
     $(document).ready(function(){
-        $(".addItemBtn").click(function(e){
+        /**$(".addItemBtn").click(function(e){
             e.preventDefault();
             var $form = $(this).closest(".form-submit");
             var idProducto = $form.find(".idProducto").val();
@@ -144,8 +146,27 @@
                     cargarCarrito();
                 }
             });
+        });**/
+        $(".operacionCantidad").on('change',function(){
+            var $el = $(this).closest('tr');
+            var idProducto = $el.find(".idProducto").val();
+            var precioProducto = $el.find(".precioProducto").val();
+            var cantidad = $el.find(".operacionCantidad").val();
+            location.reload(true);
+            $.ajax({
+                url:'accion.php',
+                method: 'post',
+                cache: false,
+                data: {cantidad:cantidad,idProducto:idProducto,precioProducto:precioProducto},
+                success:function(response)
+                {
+                    console.log(response);
+                }
+            });
         });
+
         cargarCarrito();
+         
         function cargarCarrito()
         {
             $.ajax({

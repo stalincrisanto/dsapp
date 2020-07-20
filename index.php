@@ -1,123 +1,132 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DSAPP | COMPRAS</title>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>DSAPP | Inicio de Sesión</title>
+  <!-- Tell the browser to be responsive to screen width -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
-    <!-- jQuery library -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-
-    <!-- Popper JS -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
-
-    <!-- Latest compiled JavaScript -->
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
-
-    <!--Font awesome icons-->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="./plugins/fontawesome-free/css/all.min.css">
+  <!-- Ionicons -->
+  <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+  <!-- icheck bootstrap -->
+  <link rel="stylesheet" href="plugins/icheck-bootstrap/icheck-bootstrap.min.css">
+  <!-- Theme style -->
+  <link rel="stylesheet" href="./dist/css/adminlte.min.css">
+  <!-- Google Font: Source Sans Pro -->
+  <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
 </head>
-<body>
-    <nav class="navbar navbar-expand-md bg-dark navbar-dark">
-    <!-- Brand -->
-        <a class="navbar-brand" href="./index.php"><i class="fa fa-shopping-bag"></i>&nbsp; Nombre Tienda</a>
-        <!-- Toggler/collapsibe Button -->
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
-            <span class="navbar-toggler-icon"></span>
-        </button>
+<body class="hold-transition login-page">
+<div class="login-box">
+  <div class="login-logo">
+    <a href="./index2.html"><b>VENDEDOR</b></a>
+  </div>
+  <!-- /.login-logo -->
+  <div class="card">
+    <div class="card-body login-card-body">
+      <p class="login-box-msg">Ingresa tus datos para acceder</p>
 
-        <!-- Navbar links -->
-        <div class="collapse navbar-collapse" id="collapsibleNavbar">
-            <ul class="navbar-nav ml-auto">
-                <li class="nav-item">
-                    <a class="nav-link active" href="./index.php">Productos</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Categorías</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="./compra.php">Compra</a>
-                </li>
-                <!--AQUI DEFINO EL CARRITO OJO EL ID=itemCarro-->
-                <li class="nav-item">
-                    <a class="nav-link" href="./carro_compra.php"><i class="fa fa-shopping-cart"> <span  id="itemCarro" class="badge badge-danger"></span></i></a>
-                </li>
-            </ul>
-        </div>
-    </nav>
-
-    <div class="container">
-        <div class="" id="message"></div>
-        <div class="row mt-2 pb-3">
-            <?php
-                include './config.php';
-                $stmt = $conexion->prepare("SELECT * FROM producto");
-                $stmt->execute();
-                $result = $stmt->get_result();
-                while($row = $result->fetch_assoc())
-                {
-            ?>
-            <div class="col-sm-6 col-md-4 col-lg-3 mb-2">
-                <div class="card-deck">
-                    <div class="card p-2 border-secondary mb-2">
-                        <img src="<?php echo $row["imagen_producto"] ?>" class="card-img-top" height="250">
-                        <div class="card-body p-1">
-                            <h4 class="card-title text-center text-info"><?= $row["nombre_producto"] ?></h4>
-                            <h5 class="card-text text-center text-danger"><i class="fa fa-usd" aria-hidden="true"></i> <?php echo number_format($row["precio_producto"],2) ?></h5>
-                        </div>
-                        <div class="card-footer p-1">
-                            <form action="" class="form-submit">
-                                <input type="hidden" name="" class="idProducto" value="<?= $row["id_producto"] ?>">
-                                <input type="hidden" name="" class="nombreProducto" value="<?= $row["nombre_producto"] ?>">
-                                <input type="hidden" name="" class="precioProducto" value="<?= $row["precio_producto"] ?>">
-                                <input type="hidden" name="" class="imagenProducto" value="<?= $row["imagen_producto"] ?>">
-                                <button class="btn btn-info btn-block addItemBtn"><i class="fa fa-cart-plus"></i> Añadir a Carrito</button>
-                            </form>
-                        </div>
-                    </div>
-                </div> 
-            </div>
-            <?php } ?>
-        </div>
-    </div>
-</body>
-
-<script type="text/javascript">
-    $(document).ready(function(){
-        $(".addItemBtn").click(function(e){
-            e.preventDefault();
-            var $form = $(this).closest(".form-submit");
-            var idProducto = $form.find(".idProducto").val();
-            var nombreProducto = $form.find(".nombreProducto").val();
-            var precioProducto = $form.find(".precioProducto").val();
-            var imagenProducto = $form.find(".imagenProducto").val();
-            $.ajax({
-                url:"accion.php",
-                method:"post",
-                data:{idProducto:idProducto,nombreProducto:nombreProducto,precioProducto:precioProducto,imagenProducto:imagenProducto},
-                success:function(response)
-                {
-                    $("#message").html(response);
-                    window.scrollTo(0,0);
-                    cargarCarrito();
-                }
-            });
-        });
-        cargarCarrito();
-        function cargarCarrito()
+      <?php
+        if(isset($_REQUEST['login']))
         {
-            $.ajax({
-                url:'accion.php',
-                method:'get',
-                data:{cartItem:"cart-Item"},
-                success:function(response)
-                {
-                    $("#itemCarro").html(response);
-                }
-            });
+          //echo("SI ESTOY INGRESADNO");
+          //echo($_REQUEST['email']);
+          //echo($_REQUEST['contraseña']);
+          session_start();
+          include './config.php';
+          $email = $_REQUEST['email']??'';
+          $contraseña = $_REQUEST['contraseña']??'';
+          $query = "SELECT id_local,email_propietario, nombre_local FROM tienda WHERE email_propietario='".$email."' and contraseña='".$contraseña."'";
+          $result = mysqli_query($conexion,$query);
+          $row=mysqli_fetch_assoc($result);
+          if($row)
+          {
+            $_SESSION['id_local'] = $row['id_local'];
+            $_SESSION['email_propietario'] = $row['email_propietario'];
+            $_SESSION['nombre_local'] = $row['nombre_local'];
+            header("location: portalVendedor.php");
+          }
+          else
+          {
+            
         }
-    });
-</script>
+        
+      ?>
+      <div class="alert alert-danger" role="alert">
+        Datos ingresados de forma incorrecta.
+      </div>
+      <?php } ?>
+      <?php
+        if(isset($_REQUEST['loginCliente']))
+        {
+          header("location: chatCliente.php");
+        }
+      ?>
+      
+      <form method="post">
+        <div class="input-group mb-3">
+          <input type="email" class="form-control" placeholder="Correo Electrónico" name="email">
+          <div class="input-group-append">
+            <div class="input-group-text">
+              <span class="fas fa-envelope"></span>
+            </div>
+          </div>
+        </div>
+        <div class="input-group mb-3">
+          <input type="password" class="form-control" placeholder="Contraseña" name="contraseña">
+          <div class="input-group-append">
+            <div class="input-group-text">
+              <span class="fas fa-lock"></span>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <!-- /.col -->
+          <div class="col-6">
+            <button type="submit" class="btn btn-primary btn-block" name="login">Ingresar</button>
+          </div>
+          <!-- /.col -->
+        </div><br>
+        <div class="row">
+          <!-- /.col -->
+          <div class="col-6">
+            <button type="submit" class="btn btn-primary btn-block" name="loginCliente">Soy comprador</button>
+          </div>
+          <!-- /.col -->
+        </div>
+      </form>
 
+      <div class="social-auth-links text-center mb-3">
+        <p>- OR -</p>
+        <a href="#" class="btn btn-block btn-primary">
+          <i class="fab fa-facebook mr-2"></i> Ingresar usando Facebook
+        </a>
+        <a href="#" class="btn btn-block btn-danger">
+          <i class="fab fa-google-plus mr-2"></i> Ingresar con Google +
+        </a>
+      </div>
+      <!-- /.social-auth-links -->
+
+      <p class="mb-1">
+        <a href="forgot-password.html">Olvidó su contraseña ?</a>
+      </p>
+      <p class="mb-0">
+        <a href="registrarVendedor.php" class="text-center">Regístrese</a>
+      </p>
+    </div>
+    <!-- /.login-card-body -->
+  </div>
+</div>
+<!-- /.login-box -->
+
+<!-- jQuery -->
+<script src="./plugins/jquery/jquery.min.js"></script>
+<!-- Bootstrap 4 -->
+<script src="./plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+<!-- AdminLTE App -->
+<script src="./dist/js/adminlte.min.js"></script>
+
+</body>
 </html>

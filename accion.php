@@ -68,4 +68,42 @@
         $_SESSION['message'] = 'Sin productos en el carro de compras';
         header('location:carro_compra.php');
     }
+
+    if(isset($_POST["cantidad"]))
+    {
+        $cantidad = $_POST["cantidad"];
+        $idProducto = $_POST["idProducto"];
+        $precioProducto = $_POST["precioProducto"];
+
+        $precioTotal = $cantidad*$precioProducto;
+        $stmt = $conexion->prepare("UPDATE carro_compra SET cantidad=?, precio_total=? WHERE id_producto=?");
+        $stmt->bind_param("idi",$cantidad,$precioTotal,$idProducto);
+        $stmt->execute();
+    }
+
+    if(isset($_POST['action'])&& isset($_POST['action'])=='orden')
+    {
+        $nombre=$_POST['nombre'];
+        $apellido = $_POST['apellidos'];
+        $apellido = $_POST['apellidos'];
+        $cedula = $_POST['cedula'];
+        $telefono = $_POST['telefono'];
+        $mail = $_POST['mail'];
+        $direccion = $_POST['direccion'];
+        $granTotal = $_POST['gran_total'];
+        $productos = $_POST['productos'];
+        $metodoPago = $_POST['metodoPago'];
+
+        $data = '';
+
+        $stmt = $conexion->prepare("INSERT INTO orders(campo1, campo2, campo3) VALUES(?,?,?)");
+        $stmt->bind_param("ssss",$nombre,$apellido,$cedula);
+        $stmt->execute();
+        $data.='<div class="text-center">
+                    <h1 class="display-4 mt-2 text-danger">Gracias por utilizar DSAPP</h1>
+                    <h2 class="text-success">Su orden ha sido completada y enviada al Vendedor</h2>
+                    <h4 class="bg-danger text-light rounded p-2">Artículos Comprados: '.$productos.' </h4>
+                </div>';
+        echo $data;
+    }
 ?>
