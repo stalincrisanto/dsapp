@@ -1,13 +1,6 @@
 <!DOCTYPE html>
 <html>
-<?php
-    session_start();
-    if(isset($_SESSION['id_local'])==false)
-    {
-      echo($_SESSION['id_local']); 
-      header("location:index.php");
-    }
-?>
+
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -15,8 +8,14 @@
   <!-- Tell the browser to be responsive to screen width -->
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <script src="jquery/jquery-3.5.1.min.js"></script>
+  <script src="/sweet/sweetalert2.min.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/@popperjs/core@2">
+  <link rel="stylesheet" href="/sweet/sweetalert2.min.css"> 
+  
   <script src="js/funciones.js"></script>
   <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
+  <script src="js/sweetAlert.js"></script>
 
   <!-- Font Awesome -->
   <link rel="stylesheet" href="plugins/fontawesome-free/css/all.min.css">
@@ -62,7 +61,40 @@
 <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/themes/bootstrap.rtl.min.css"/>
 
 </head>
+
 <body class="hold-transition sidebar-mini layout-fixed">
+
+<?php
+    session_start();
+    if(isset($_SESSION['id_local'])==false)
+    {
+      echo($_SESSION['id_local']); 
+      header("location:index.php");
+    }
+    if(isset($_REQUEST['sesion'])&&($_REQUEST['sesion']=="cerrar"))
+    {
+      session_destroy();
+      header("location:index.php");
+    }
+    require ('config.php');
+    $stmt = $conexion->prepare("SELECT * FROM pedidos WHERE id_local='".$_SESSION['id_local']."' and estado='activo'");
+    $stmt->execute();
+    $stmt->store_result();
+    $rows = $stmt->num_rows();
+		if($rows>0)
+		{
+      echo ("TIENES ".$rows." VENTAS NUEVAS");
+    
+?>
+  <script>
+  Swal.fire(
+  'Atención',
+  'Tienes Nuevos Pedidos',
+  'success'
+    )
+  </script>
+<?php } ?>
+
 <div class="wrapper">
 
   <!-- Navbar -->
@@ -77,17 +109,10 @@
     <!-- Right navbar links -->
     <ul class="navbar-nav ml-auto">
       <!-- Messages Dropdown Menu -->
-      <li class="nav-item dropdown">
-        <a class="nav-link" data-toggle="dropdown" href="#">
-          <i class="far fa-comments"></i>
-        </a>
-        
-      </li>
       <!-- Notifications Dropdown Menu -->
       <li class="nav-item dropdown">
         <a class="nav-link" data-toggle="dropdown" href="#">
-          <i class="far fa-bell"></i>
-          <span class="badge badge-warning navbar-badge">15</span>
+          <i class="far fa-comments"></i>
         </a>
         <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
           <span class="dropdown-item dropdown-header">15 Notifications</span>
@@ -111,8 +136,14 @@
         </div>
       </li>
       <li class="nav-item">
-        <a class="nav-link" data-widget="control-sidebar" data-slide="true" href="#" role="button">
-          <i class="fas fa-th-large"></i>
+        <!--<a href="#" class="btn btn-info btn-lg nav-link" data-widget="control-sidebar">
+          <span class="glyphicon glyphicon-log-out"></span> Log out
+        </a>-->
+        <!--<a class="nav-link" data-widget="control-sidebar" data-slide="true" href="#" role="button">
+          <span class="glyphicon glyphicon-log-out"></span>
+        </a>-->
+        <a href="portalVendedor.php?sesion=cerrar" class="nav-link text-danger" role="button" title="Cerrar Sesión">
+          <i class="fas fa-sign-out-alt"></i>
         </a>
       </li>
     </ul>
@@ -131,10 +162,10 @@
 
     <!-- Sidebar -->
     <div class="sidebar">
-      <!-- Sidebar user panel (optional) -->
+      <!-- AQUI LOS DATOS DEL ALMACEN QUE VA INGRESANDO -->
       <div class="user-panel mt-3 pb-3 mb-3 d-flex">
         <div class="image">
-          <img src="dist/img/user2-160x160.jpg" class="img-circle elevation-2" alt="User Image">
+          <img src="<?php echo $_SESSION['imagen_local']; ?>" class="img-circle elevation-2" alt="User Image">
         </div>
         <div class="info">
           <a href="#" class="d-block"><?php echo $_SESSION['nombre_local']; ?></a>
@@ -181,12 +212,12 @@
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <h1 class="m-0 text-dark">Dashboard</h1>
+            <h1 class="m-0 text-dark">Bienvenido a tu portal: <?php echo $_SESSION['nombre_local'] ?></h1>
           </div><!-- /.col -->
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
               <li class="breadcrumb-item"><a href="#">Home</a></li>
-              <li class="breadcrumb-item active">Dashboard v1</li>
+              <!--<li class="breadcrumb-item active">Dashboard v1</li>-->
             </ol>
           </div><!-- /.col -->
         </div><!-- /.row -->

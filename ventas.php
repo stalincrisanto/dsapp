@@ -1,10 +1,16 @@
 <!DOCTYPE html>
 <html>
 <?php
+  $id_pedido="";
     session_start();
     if(isset($_SESSION['id_local'])==false)
     {
       echo($_SESSION['id_local']); 
+      header("location:index.php");
+    }
+    if(isset($_REQUEST['sesion'])&&($_REQUEST['sesion']=="cerrar"))
+    {
+      session_destroy();
       header("location:index.php");
     }
 ?>
@@ -15,8 +21,12 @@
   <!-- Tell the browser to be responsive to screen width -->
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <script src="jquery/jquery-3.5.1.min.js"></script>
+  <script src="/sweet/sweetalert2.min.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/@popperjs/core@2">
+  <link rel="stylesheet" href="/sweet/sweetalert2.min.css">
   <script src="js/funciones.js"></script>
   <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+  
 
   <!-- Font Awesome -->
   <link rel="stylesheet" href="plugins/fontawesome-free/css/all.min.css">
@@ -63,6 +73,35 @@
 
 </head>
 <body class="hold-transition sidebar-mini layout-fixed">
+<?php
+  if(isset($_GET["completar"]))
+  {
+    /**$stmt = $conexion->prepare("UPDATE pedidos SET estado='completado' WHERE id_pedido=?");
+    $stmt->bind_param("i", $idpedido);
+    $idpedido = $_POST["idpedido"];
+    $stmt->execute();
+    $stmt->close();**/
+    require 'config.php';
+    $result = $conexion->query("SELECT * FROM pedidos WHERE id_pedido=".$_GET["completar"]);
+    if($result->num_rows>0)
+    {
+      $row2 = $result->fetch_assoc();
+      $id_pedido = $row2["id_pedido"];
+    }
+    $stmt = $conexion->prepare("UPDATE pedidos SET estado='completado' WHERE id_pedido=?");
+    $stmt->bind_param("i", $codigoPedido);
+    $codigoPedido = $id_pedido;
+    $stmt->execute();
+    $stmt->close();
+    $stmt2 = $conexion->prepare("UPDATE carro_compra SET estado_vendedor='completado' WHERE id_local=?");
+    $stmt2->bind_param("i", $_SESSION['id_local']);
+    $stmt2->execute();
+    $stmt2->close();
+    $codigoPedido="";
+  }
+?>
+
+
 <div class="wrapper">
 
   <!-- Navbar -->
@@ -77,17 +116,10 @@
     <!-- Right navbar links -->
     <ul class="navbar-nav ml-auto">
       <!-- Messages Dropdown Menu -->
-      <li class="nav-item dropdown">
-        <a class="nav-link" data-toggle="dropdown" href="#">
-          <i class="far fa-comments"></i>
-        </a>
-        
-      </li>
       <!-- Notifications Dropdown Menu -->
       <li class="nav-item dropdown">
         <a class="nav-link" data-toggle="dropdown" href="#">
-          <i class="far fa-bell"></i>
-          <span class="badge badge-warning navbar-badge">15</span>
+          <i class="far fa-comments"></i>
         </a>
         <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
           <span class="dropdown-item dropdown-header">15 Notifications</span>
@@ -111,8 +143,14 @@
         </div>
       </li>
       <li class="nav-item">
-        <a class="nav-link" data-widget="control-sidebar" data-slide="true" href="#" role="button">
-          <i class="fas fa-th-large"></i>
+        <!--<a href="#" class="btn btn-info btn-lg nav-link" data-widget="control-sidebar">
+          <span class="glyphicon glyphicon-log-out"></span> Log out
+        </a>-->
+        <!--<a class="nav-link" data-widget="control-sidebar" data-slide="true" href="#" role="button">
+          <span class="glyphicon glyphicon-log-out"></span>
+        </a>-->
+        <a href="portalVendedor.php?sesion=cerrar" class="nav-link text-danger" role="button" title="Cerrar Sesión">
+          <i class="fas fa-sign-out-alt"></i>
         </a>
       </li>
     </ul>
@@ -173,6 +211,94 @@
     <!-- /.sidebar -->
   </aside>
 </div>
+
+<div class="content-wrapper">
+  <div class="content-header">
+    <div class="row mb-2">
+      <div class="col-sm-12">
+        <h1 class="m-0 text-dark" style="text-align: center;">Pedidos de: <?php echo $_SESSION['nombre_local'] ?></h1>
+      </div>
+    </div>
+  </div>
+  <section class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-12">
+          <div class="card-header" style="background-color: #6c757d;">
+                <h3 style="color:white; text-align:center"><strong>Listado de Pedidos</strong></h3>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="content">
+    <div class="row">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-body">
+            <div class="table-responsive">
+              
+              <br><table class="table table-bordered table-hover table-condensed" id="tablaVentas">                  
+                <thead>
+                  <tr>
+                    <th>Código</th>
+                    <th>Cédula Cliente</th>
+                    <th>Nombre</th>
+                    <th>Total Pedido</th>
+                    <th>Fecha</th>
+                    <th>Método de Pago</th>
+                    <th>Acción</th>
+                  </tr> 
+                </thead>
+                <tbody>
+                  <?php
+                    require './services/serviciosProductos.php';
+                    $result = listarPedidos();
+                    if($result->num_rows>0)
+                    {
+                      while ($row = $result->fetch_assoc())
+                      {
+                  ?>
+                    <tr>
+                      <td> <?= $row["id_pedido"] ?> </td>
+                      <td> <?= $row["cedula_cliente"] ?> </td>
+                      <td> <?= $row["nombre_cliente"] ?> </td>
+                      <td> <?= $row["total_pedido"] ?> </td>
+                      <td> <?= $row["fecha_pedido"] ?> </td>
+                      <td> <?= $row["metodo_pago"] ?> </td>
+                      <td>
+                        <div class="text-center">
+                          <div class="btn-group">
+                            <a href="ventas.php?completar=<?php echo $row ["id_pedido"];?>" type="button" class="btn btn-primary">Termir Venta</a>
+                            <a href="detalle.php?tienda=<?php echo $_SESSION["id_local"]; ?>" type="button" class="btn btn-danger" >Detalles</a>               
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                  <?php
+                      }
+                    }
+                    else
+                    {
+                      echo"No hay datos";
+                    }
+                  ?>
+                </tbody>
+              </table>    
+            </div>
+          </div>
+          
+        </div>
+        
+      </div>
+      
+    </div>
+    
+  </section>
+
+</div> 
+
 
 <!-- jQuery -->
 <script src="plugins/jquery/jquery.min.js"></script>

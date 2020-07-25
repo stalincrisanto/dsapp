@@ -8,7 +8,7 @@
     $precio = "";
     $descripcion = "";
     $existencia = "";
-    $imagen = "";
+    //$imagen = "";
     $accion = "Agregar";
     if(isset($_POST["accion"]) && ($_POST["accion"]=="Agregar"))
     {
@@ -16,12 +16,15 @@
       require 'config.php';
       /**AQUI GUARDO EN LAS VARIABLES CON EL POST, PEEERO DEL POST TIENE QUE SER LO QUE MANDO DEL FORMULARIO**/
       $stmt = $conexion->prepare("INSERT INTO productos (id_local,nombre_producto, precio_producto, descripcion_producto, existencia, imagen) VALUES (?, ?, ?, ?, ?, ?)");
-      $stmt->bind_param("isdsis", $idLocal,$nombre, $precio, $descripcion, $existencia, $imagen);
+      $stmt->bind_param("isdsis", $idLocal,$nombre, $precio, $descripcion, $existencia, $ruta);
       $nombre = $_POST["nombreProducto"];
       $precio = $_POST["precioProducto"];
       $descripcion = $_POST["descripcionProducto"];
       $existencia = $_POST["existenciaProducto"];
-      $imagen = $_POST["imagenProducto"];
+      $imagen = $_FILES['imagenProducto']['name'];
+      $archivo = $_FILES['imagenProducto']['tmp_name'];
+      $ruta = "images/".$imagen;
+      move_uploaded_file($archivo,$ruta);
       $stmt->execute();
       $stmt->close();
       //$codigo="";
@@ -85,16 +88,16 @@
         $stmt->close();
         $codigo="";
     }
-
-    /*else if(isset($_POST["eliminarCodigo"]))
+    if(isset($_SESSION['id_local'])==false)
     {
-        $stmt = $conexion->prepare("DELETE FROM productos WHERE codigo=?");
-        $stmt->bind_param("i", $codigo);
-        $codigo = $_POST["eliminarCodigo"];
-        $stmt->execute();
-        $stmt->close();
-        $codigo="";
-    }*/
+      echo($_SESSION['id_local']); 
+      header("location:index.php");
+    }
+    if(isset($_REQUEST['sesion'])&&($_REQUEST['sesion']=="cerrar"))
+    {
+      session_destroy();
+      header("location:index.php");
+    }
 ?>
 
 <head>
@@ -166,17 +169,10 @@
     <!-- Right navbar links -->
     <ul class="navbar-nav ml-auto">
       <!-- Messages Dropdown Menu -->
-      <li class="nav-item dropdown">
-        <a class="nav-link" data-toggle="dropdown" href="#">
-          <i class="far fa-comments"></i>
-        </a>
-        
-      </li>
       <!-- Notifications Dropdown Menu -->
       <li class="nav-item dropdown">
         <a class="nav-link" data-toggle="dropdown" href="#">
-          <i class="far fa-bell"></i>
-          <span class="badge badge-warning navbar-badge">15</span>
+          <i class="far fa-comments"></i>
         </a>
         <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
           <span class="dropdown-item dropdown-header">15 Notifications</span>
@@ -200,8 +196,14 @@
         </div>
       </li>
       <li class="nav-item">
-        <a class="nav-link" data-widget="control-sidebar" data-slide="true" href="#" role="button">
-          <i class="fas fa-th-large"></i>
+        <!--<a href="#" class="btn btn-info btn-lg nav-link" data-widget="control-sidebar">
+          <span class="glyphicon glyphicon-log-out"></span> Log out
+        </a>-->
+        <!--<a class="nav-link" data-widget="control-sidebar" data-slide="true" href="#" role="button">
+          <span class="glyphicon glyphicon-log-out"></span>
+        </a>-->
+        <a href="portalVendedor.php?sesion=cerrar" class="nav-link text-danger" role="button" title="Cerrar Sesión">
+          <i class="fas fa-sign-out-alt"></i>
         </a>
       </li>
     </ul>
@@ -223,7 +225,7 @@
       <!-- Sidebar user panel (optional) -->
       <div class="user-panel mt-3 pb-3 mb-3 d-flex">
         <div class="image">
-          <img src="dist/img/user2-160x160.jpg" class="img-circle elevation-2" alt="User Image">
+          <img src="<?php echo $_SESSION['imagen_local']; ?>" class="img-circle elevation-2" alt="User Image">
         </div>
         <div class="info">
           <a href="#" class="d-block"><?php echo $_SESSION['nombre_local']; ?></a>
@@ -263,8 +265,15 @@
   </aside>
 
 
-<form action="./catalogo.php" name="forma" method="post" id="forma">
+<form action="./catalogo.php" name="forma" method="post" id="forma" enctype="multipart/form-data">
 <div class="content-wrapper">
+  <div class="content-header">
+    <div class="row mb-2">
+      <div class="col-sm-12">
+        <h1 class="m-0 text-dark" style="text-align: center;">Catálogo de: <?php echo $_SESSION['nombre_local'] ?></h1>
+      </div>
+    </div>
+  </div>
   <section class="content-header">
     <div class="container-fluid">
       <div class="row mb-2">
@@ -380,13 +389,19 @@
                       <input type="text" name="existenciaProducto" value="<?php echo $existencia?>" class="form-control">
                     </div>
                 </div>
-                <div class="form-group row">
+                <!--<div class="form-group row">
                   <label for="imagenProducto" id="lblimagenProducto" class="col-sm-3 col-form-label">Imagen del Producto</label></td><br>
                     <div class="col-sm-7">
                       <input type="text" name="imagenProducto" value="<?php echo $imagen?>" class="form-control">
                     </div>
+                </div>-->
+                <div class="form-group row">
+                  <label for="imagenProducto" id="lblimagenProducto" class="col-sm-3 col-form-label">Imagen del Producto</label></td><br>
+                    <div class="col-sm-7">
+                      <input type="file" name="imagenProducto" value="<?php echo $imagen?>" class="form-control">
+                    </div>
                 </div>
-                  <input type="submit" name="accion" value="<?php echo $accion ?>" class="btn btn-primary">
+                <input type="submit" name="accion" value="<?php echo $accion ?>" class="btn btn-primary">
               </form>
           </div>
         </div>

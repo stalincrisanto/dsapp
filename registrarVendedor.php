@@ -1,146 +1,96 @@
 <?php
   if(isset($_POST["registro_vendedor"]) && ($_POST["registro_vendedor"]=="Registrar"))
   {
+    $imagen = $_FILES['imagen_local']['name'];
+    $archivo = $_FILES['imagen_local']['tmp_name'];
+    $ruta = "images/".$imagen;
+    move_uploaded_file($archivo,$ruta);
     include './services/serviciosVendedor.php';
-    insertarVendedor($_POST["nombre_local"],$_POST["direccion_local"],$_POST["telefono_local"],
+    insertarVendedor($_POST["nombre_local"],$_POST["direccion_local"],$_POST["telefono_local"],$ruta,
     $_POST["nombre_propietario"],$_POST["apellido_propietario"],$_POST["email_propietario"],$_POST["contraseña"],
-    $_POST["categoria"],);
+    $_POST["categoria"]);
     header("location: index.php");
   }
 ?>
 <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Nuevo Registro | DSAPP</title>
-  <script src="jquery/jquery-3.5.1.min.js"></script>
-  <!-- JavaScript -->
-  <script src="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/alertify.min.js"></script>
-  <!-- CSS -->
-  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/alertify.min.css"/>
-  <!-- Default theme -->
-  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/themes/default.min.css"/>
-  <!-- Semantic UI theme -->
-  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/themes/semantic.min.css"/>
-  <!-- Bootstrap theme -->
-  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/themes/bootstrap.min.css"/>
-  <!-- 
-      RTL version
-  -->
-  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/alertify.rtl.min.css"/>
-  <!-- Default theme -->
-  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/themes/default.rtl.min.css"/>
-  <!-- Semantic UI theme -->
-  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/themes/semantic.rtl.min.css"/>
-  <!-- Bootstrap theme -->
-  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/themes/bootstrap.rtl.min.css"/>
-  <!-- Tell the browser to be responsive to screen width -->
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <!-- Font Awesome -->
-  <link rel="stylesheet" href="plugins/fontawesome-free/css/all.min.css">
-  <!-- Ionicons -->
-  <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
-  <!-- Tempusdominus Bbootstrap 4 -->
-  <link rel="stylesheet" href="plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css">
-  <!-- iCheck -->
-  <link rel="stylesheet" href="plugins/icheck-bootstrap/icheck-bootstrap.min.css">
-  <!-- JQVMap -->
-  <link rel="stylesheet" href="plugins/jqvmap/jqvmap.min.css">
-  <!-- Theme style -->
-  <link rel="stylesheet" href="dist/css/adminlte.min.css">
-  <!-- overlayScrollbars -->
-  <link rel="stylesheet" href="plugins/overlayScrollbars/css/OverlayScrollbars.min.css">
-  <!-- Daterange picker -->
-  <link rel="stylesheet" href="plugins/daterangepicker/daterangepicker.css">
-  <!-- summernote -->
-  <link rel="stylesheet" href="plugins/summernote/summernote-bs4.css">
-  <!-- Google Font: Source Sans Pro -->
-  <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
-  <!-- Font Awesome -->
-  <link rel="stylesheet" href="./plugins/fontawesome-free/css/all.min.css">
-  <!-- Ionicons -->
-  <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
-  <!-- icheck bootstrap -->
-  <link rel="stylesheet" href="plugins/icheck-bootstrap/icheck-bootstrap.min.css">
-  <!-- Theme style -->
-  <link rel="stylesheet" href="./dist/css/adminlte.min.css">
-  <!-- Google Font: Source Sans Pro -->
-  <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
-  <!--BOOTSTRAP-->
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
-</head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Registrar Vendedor</title>
 
+    <!-- Font Icon -->
+    <link rel="stylesheet" href="fonts_registro/material-icon/css/material-design-iconic-font.min.css">
+
+    <!-- Main css -->
+    <link rel="stylesheet" href="css_registro/style.css">
+
+</head>
 <body>
 
-  <div class="content mt-5">
-    <div class="row justify-content-center">
-      <div class="col-md-6">
-      <div class="card card-info">
-    <div class="card-header text-center">
-      <h3 class="card-title">Registro de Vendedor</h3>
+    <div class="main">
+        <div class="container">
+            <div class="signup-content">
+                <div class="signup-img">
+                    <img src="images/signup-img.jpg" alt="">
+                </div>
+                <div class="signup-form">
+                    <form method="POST" class="register-form" id="register-form" enctype="multipart/form-data">
+                        <h2>Registrar Nuevo Vendedor</h2>
+                        <div class="form-group">
+                            <label for="nombre_local">Nombre del Local:</label>
+                            <input type="text" name="nombre_local" placeholder="Ingrese el nombre del Local" required/>
+                        </div>
+                        <div class="form-group">
+                            <label for="direccion_local">Dirección del Local:</label>
+                            <input type="text" name="direccion_local" placeholder="Ingrese la dirección del Local" required/>
+                        </div>
+                        <div class="form-group">
+                            <label for="telefono_local">Teléfono del Local:</label>
+                            <input type="text" name="telefono_local" placeholder="Ingrese el teléfono del Local" required/>
+                        </div>
+                        <div class="form-group">
+                            <label for="imagen_local">Imagen:</label>
+                            <input type="file" name="imagen_local" placeholder="Imagen del Local" required/>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="nombre_propietario">Nombre del propietario :</label>
+                                <input type="text" name="nombre_propietario" placeholder="Nombre del Propietario" required="">
+                            </div>
+                            <div class="form-group">
+                                <label for="apellido_propietario">Apellido del propietario :</label>
+                                <input type="text" name="apellido_propietario" placeholder="Apellido del Propietario" required="">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="email_propietario">Email del Propietario:</label>
+                            <input type="text" name="email_propietario" placeholder="Ingrese el email del propietario" required/>
+                        </div>
+                        <div class="form-group">
+                            <label for="contraseña">Contraseña:</label>
+                            <input type="password" name="contraseña" placeholder="Ingrese una contraseña" required/>
+                        </div>
+                        <div class="form-group">
+                            <label for="categoria1">Categoría de sus productos:</label>
+                            <input type="text" name="categoria" placeholder="Ingrese la categoría de su producto (zapatos, ropa, viveres)" required/>
+                        </div>
+
+                        <div class="form-submit">
+                            <input type="submit" id="submit" class="submit" name="registro_vendedor" value="Registrar">
+                            <a href="index.php"  id="" class="submit">Cancelar</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
     </div>
-    <!-- /.card-header -->
-    <!-- form start -->
-    <form action="#" name="forma_vendedor" method="post" name="forma" class="form-horizontal">
-      <div class="card-body">
-        <div class="form-group row">
-          <label for="nombre_local" class="col-sm-3 col-form-label">Nombre del Local</label>
-          <div class="col-sm-9">
-            <input type="text" class="form-control" name="nombre_local" placeholder="Nombre del local">
-          </div>
-        </div>
-        <div class="form-group row">
-          <label for="direccion_local" class="col-sm-3 col-form-label">Dirección del Local</label>
-          <div class="col-sm-9">
-            <input type="text" class="form-control" name="direccion_local" placeholder="Dirección del local">
-          </div>
-        </div>
-        <div class="form-group row">
-          <label for="telefono_local" class="col-sm-3 col-form-label">Teléfono del Local</label>
-          <div class="col-sm-9">
-            <input type="text" class="form-control" name="telefono_local" placeholder="Teléfono del local">
-          </div>
-        </div>
-        <div class="form-group row">
-          <label for="nombre_propietario" class="col-sm-3 col-form-label">Nombre del propietario</label>
-          <div class="col-sm-9">
-            <input type="text" class="form-control" name="nombre_propietario" placeholder="Nombre del propietario">
-          </div>
-        </div>
-        <div class="form-group row">
-          <label for="apellido_propietario" class="col-sm-3 col-form-label">Apellido del propietario</label>
-          <div class="col-sm-9">
-            <input type="text" class="form-control" name="apellido_propietario" placeholder="Apellido del propietario">
-          </div>
-        </div>
-        <div class="form-group row">
-          <label for="email_propietario" class="col-sm-3 col-form-label">Email del propietario</label>
-          <div class="col-sm-9">
-            <input type="mail" class="form-control" name="email_propietario" placeholder="Email del propietario">
-          </div>
-        </div>
-        <div class="form-group row">
-          <label for="contraseña" class="col-sm-3 col-form-label">Ingrese una contraseña</label>
-          <div class="col-sm-9">
-            <input type="password" class="form-control" name="contraseña" placeholder="Contraseña">
-          </div>
-        </div>
-        <div class="form-group row">
-          <label for="categoria1" class="col-sm-3 col-form-label">Ingrese una categoría</label>
-          <div class="col-sm-9">
-            <input type="text" class="form-control" name="categoria" placeholder="Categoría">
-          </div>
-        </div>
-      </div>
-      <!-- /.card-body -->
-      <div class="card-footer">
-        <input type="submit" id="agregado" class="btn btn-info" name="registro_vendedor" value="Registrar" class="btn btn-info">
-        <a href="index.php" class="btn btn-danger float-right">Cancelar</a>
-      </div>
-      <!-- /.card-footer -->
-    </form>
-  </div>
-</body>
+
+    <!-- JS -->
+    <script src="vendor/jquery/jquery.min.js"></script>
+    <script src="js_registro/main.js"></script>
+</body><!-- This templates was made by Colorlib (https://colorlib.com) -->
 </html>

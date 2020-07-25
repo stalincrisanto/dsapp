@@ -1,132 +1,125 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>DSAPP | Inicio de Sesión</title>
-  <!-- Tell the browser to be responsive to screen width -->
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-
-  <!-- Font Awesome -->
-  <link rel="stylesheet" href="./plugins/fontawesome-free/css/all.min.css">
-  <!-- Ionicons -->
-  <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
-  <!-- icheck bootstrap -->
-  <link rel="stylesheet" href="plugins/icheck-bootstrap/icheck-bootstrap.min.css">
-  <!-- Theme style -->
-  <link rel="stylesheet" href="./dist/css/adminlte.min.css">
-  <!-- Google Font: Source Sans Pro -->
-  <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
+	<title>DSAPP | Inicio de Sesión</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+<!--===============================================================================================-->	
+	<link rel="icon" type="image/png" href="images/icons/favicon.ico"/>
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="vendor_login/bootstrap/css/bootstrap.min.css">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="fonts_login/font-awesome-4.7.0/css/font-awesome.min.css">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="fonts_login/Linearicons-Free-v1.0.0/icon-font.min.css">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="vendor_login/animate/animate.css">
+<!--===============================================================================================-->	
+	<link rel="stylesheet" type="text/css" href="vendor_login/css-hamburgers/hamburgers.min.css">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="vendor_login/select2/select2.min.css">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="css_login/util.css">
+	<link rel="stylesheet" type="text/css" href="css_login/main.css">
+<!--===============================================================================================-->
 </head>
-<body class="hold-transition login-page">
-<div class="login-box">
-  <div class="login-logo">
-    <a href="./index2.html"><b>VENDEDOR</b></a>
-  </div>
-  <!-- /.login-logo -->
-  <div class="card">
-    <div class="card-body login-card-body">
-      <p class="login-box-msg">Ingresa tus datos para acceder</p>
+<body>
+	<div class="limiter">
+		<div class="container-login100" style="background-image: url('images/img-01.jpg');">
+			<div class="wrap-login100 p-t-190 p-b-30">
+				<?php
+				if(isset($_REQUEST['login']))
+				{
+				  //echo("SI ESTOY INGRESADNO");
+				  //echo($_REQUEST['email']);
+				  //echo($_REQUEST['contraseña']);
+				  session_start();
+				  include './config.php';
+				  $email = $_REQUEST['email']??'';
+				  $contraseña = $_REQUEST['contraseña']??'';
+				  $query = "SELECT id_local,email_propietario, nombre_local, imagen_local FROM tienda WHERE email_propietario='".$email."' and contraseña='".$contraseña."'";
+				  $result = mysqli_query($conexion,$query);
+				  $row=mysqli_fetch_assoc($result);
+				  if($row)
+				  {
+					$_SESSION['id_local'] = $row['id_local'];
+					$_SESSION['email_propietario'] = $row['email_propietario'];
+					$_SESSION['nombre_local'] = $row['nombre_local'];
+					$_SESSION['imagen_local'] = $row['imagen_local'];
+					$mensaje="";
+					header("location: portalVendedor.php");
+				  }
+				  else
+				  {
+					
+				}
+				
+			  ?>
+			  <div class="alert alert-danger" role="alert">
+				Datos ingresados de forma incorrecta.
+			  </div>
+			  <?php } ?>
+			  <?php
+				if(isset($_REQUEST['loginCliente']))
+				{
+				  header("location: chatCliente.php");
+				}
+			  ?>
+				<form class="login100-form validate-form" method="post">
+					<div class="login100-form-avatar">
+						<img src="images/avatar-01.jpg" alt="AVATAR">
+					</div>
+					<span class="login100-form-title p-t-20 p-b-45">
+						Iniciar Sesión Vendedor
+					</span>
 
-      <?php
-        if(isset($_REQUEST['login']))
-        {
-          //echo("SI ESTOY INGRESADNO");
-          //echo($_REQUEST['email']);
-          //echo($_REQUEST['contraseña']);
-          session_start();
-          include './config.php';
-          $email = $_REQUEST['email']??'';
-          $contraseña = $_REQUEST['contraseña']??'';
-          $query = "SELECT id_local,email_propietario, nombre_local FROM tienda WHERE email_propietario='".$email."' and contraseña='".$contraseña."'";
-          $result = mysqli_query($conexion,$query);
-          $row=mysqli_fetch_assoc($result);
-          if($row)
-          {
-            $_SESSION['id_local'] = $row['id_local'];
-            $_SESSION['email_propietario'] = $row['email_propietario'];
-            $_SESSION['nombre_local'] = $row['nombre_local'];
-            header("location: portalVendedor.php");
-          }
-          else
-          {
-            
-        }
-        
-      ?>
-      <div class="alert alert-danger" role="alert">
-        Datos ingresados de forma incorrecta.
-      </div>
-      <?php } ?>
-      <?php
-        if(isset($_REQUEST['loginCliente']))
-        {
-          header("location: chatCliente.php");
-        }
-      ?>
-      
-      <form method="post">
-        <div class="input-group mb-3">
-          <input type="email" class="form-control" placeholder="Correo Electrónico" name="email">
-          <div class="input-group-append">
-            <div class="input-group-text">
-              <span class="fas fa-envelope"></span>
-            </div>
-          </div>
-        </div>
-        <div class="input-group mb-3">
-          <input type="password" class="form-control" placeholder="Contraseña" name="contraseña">
-          <div class="input-group-append">
-            <div class="input-group-text">
-              <span class="fas fa-lock"></span>
-            </div>
-          </div>
-        </div>
-        <div class="row">
-          <!-- /.col -->
-          <div class="col-6">
-            <button type="submit" class="btn btn-primary btn-block" name="login">Ingresar</button>
-          </div>
-          <!-- /.col -->
-        </div><br>
-        <div class="row">
-          <!-- /.col -->
-          <div class="col-6">
-            <button type="submit" class="btn btn-primary btn-block" name="loginCliente">Soy comprador</button>
-          </div>
-          <!-- /.col -->
-        </div>
-      </form>
+					<div class="wrap-input100 validate-input m-b-10" data-validate = "Username is required">
+						<input class="input100" type="email" name="email" placeholder="Correo Electrónico">
+						<span class="focus-input100"></span>
+						<span class="symbol-input100">
+							<i class="fa fa-user"></i>
+						</span>
+					</div>
 
-      <div class="social-auth-links text-center mb-3">
-        <p>- OR -</p>
-        <a href="#" class="btn btn-block btn-primary">
-          <i class="fab fa-facebook mr-2"></i> Ingresar usando Facebook
-        </a>
-        <a href="#" class="btn btn-block btn-danger">
-          <i class="fab fa-google-plus mr-2"></i> Ingresar con Google +
-        </a>
-      </div>
-      <!-- /.social-auth-links -->
+					<div class="wrap-input100 validate-input m-b-10" data-validate = "Password is required">
+						<input class="input100" type="password" name="contraseña" placeholder="Password">
+						<span class="focus-input100"></span>
+						<span class="symbol-input100">
+							<i class="fa fa-lock"></i>
+						</span>
+					</div>
 
-      <p class="mb-1">
-        <a href="forgot-password.html">Olvidó su contraseña ?</a>
-      </p>
-      <p class="mb-0">
-        <a href="registrarVendedor.php" class="text-center">Regístrese</a>
-      </p>
-    </div>
-    <!-- /.login-card-body -->
-  </div>
-</div>
-<!-- /.login-box -->
+					<div class="container-login100-form-btn p-t-10">
+						<button type="submit" class="login100-form-btn" name="login">
+							Ingresar
+						</button>
+					</div>
 
-<!-- jQuery -->
-<script src="./plugins/jquery/jquery.min.js"></script>
-<!-- Bootstrap 4 -->
-<script src="./plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
-<!-- AdminLTE App -->
-<script src="./dist/js/adminlte.min.js"></script>
+					<div class="text-center w-full p-t-25 p-b-230">
+						<a href="#" class="txt1">
+							Olvidaste tu Contraseña ? 
+						</a>
+					</div>
+
+					<div class="container-login100-form-btn p-t-10">
+						<a href="registrarVendedor.php" class="login100-form-btn">Eres Vendedor? Regístrate</a>
+					</div>
+					<div class="container-login100-form-btn p-t-10">
+						<a href="registrarCliente.php" class="login100-form-btn">Eres Cliente? Regístrate</a>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+<!--===============================================================================================-->	
+	<script src="vendor/jquery/jquery-3.2.1.min.js"></script>
+<!--===============================================================================================-->
+	<script src="vendor/bootstrap/js/popper.js"></script>
+	<script src="vendor/bootstrap/js/bootstrap.min.js"></script>
+<!--===============================================================================================-->
+	<script src="vendor/select2/select2.min.js"></script>
+<!--===============================================================================================-->
+	<script src="js/main.js"></script>
 
 </body>
 </html>

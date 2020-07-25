@@ -1,14 +1,27 @@
 <?php 
-    function insertarVendedor($nombrel, $direccionl,$telefonol,
+    function insertarVendedor($nombrel, $direccionl,$telefonol,$imagenl,
     $nombrep,$apellidop,$emailp,$contraseña,$categoria1)
     {
         include "./config.php";
         //$conexion = getConex();
-        $stmt = $conexion->prepare("INSERT INTO tienda (nombre_local,direccion_local,telefono_local,
+        $stmt = $conexion->prepare("INSERT INTO tienda (nombre_local,direccion_local,telefono_local,imagen_local,
         nombre_propietario,apellido_propietario,email_propietario,
-        contraseña, categoria) VALUES(?,?,?,?,?,?,?,?)");
-        $stmt->bind_param('ssssssss',$nombrel, $direccionl,$telefonol,
+        contraseña, categoria) VALUES(?,?,?,?,?,?,?,?,?)");
+        $stmt->bind_param('sssssssss',$nombrel, $direccionl,$telefonol,$imagenl,
         $nombrep,$apellidop,$emailp,$contraseña,$categoria1);
+        $stmt->execute();
+        $stmt->close();
+        $conexion->close();
+    }
+    function insertarCliente($nombrec, $apellidoc,$cedulac,$telefonoc,
+    $emailc,$contraseñac,$direccionc)
+    {
+        include "./config.php";
+        //$conexion = getConex();
+        $stmt = $conexion->prepare("INSERT INTO clientes (nombre_cliente,apellido_cliente,cedula_cliente,
+        telefono_cliente,email_cliente,contraseña_cliente,direccion) VALUES(?,?,?,?,?,?,?)");
+        $stmt->bind_param('sssssss',$nombrec, $apellidoc,$cedulac,$telefonoc,
+        $emailc,$contraseñac,$direccionc);
         $stmt->execute();
         $stmt->close();
         $conexion->close();
